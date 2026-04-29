@@ -9,6 +9,9 @@ agent:
   build:
     context: .
     dockerfile: Dockerfile
+  interfaces:
+    frontend: true
+    messaging: false
 
 models:
   openai:
@@ -19,9 +22,6 @@ integrations:
     provider: openai
   supabase:
     provider: supabase
-
-interfaces:
-  frontend: true
 
 dev:
   interfaces:
