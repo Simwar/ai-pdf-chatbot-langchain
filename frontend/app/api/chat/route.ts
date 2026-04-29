@@ -50,6 +50,7 @@ export async function POST(req: Request) {
         {
           input: { query: message },
           streamMode: ['messages', 'updates'],
+          multitaskStrategy: 'interrupt',
           config: {
             configurable: {
               ...retrievalAssistantStreamConfig,
