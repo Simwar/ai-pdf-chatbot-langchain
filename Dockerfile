@@ -15,7 +15,6 @@ COPY frontend/ ./
 # them at build time. Set placeholders here so the build succeeds; real values are injected
 # at runtime via `ast configure`.
 ENV NEXT_PUBLIC_LANGGRAPH_API_URL=http://placeholder
-ENV LANGCHAIN_API_KEY=placeholder
 ENV LANGGRAPH_RETRIEVAL_ASSISTANT_ID=retrieval_graph
 ENV LANGGRAPH_INGESTION_ASSISTANT_ID=ingestion_graph
 
@@ -35,7 +34,6 @@ COPY --from=builder /app/node_modules ./node_modules
 # and throws immediately if these are missing. Provide defaults so the server starts;
 # real values are injected by `ast configure` and override these at runtime.
 ENV NEXT_PUBLIC_LANGGRAPH_API_URL=http://placeholder
-ENV LANGCHAIN_API_KEY=placeholder
 ENV LANGGRAPH_RETRIEVAL_ASSISTANT_ID=retrieval_graph
 ENV LANGGRAPH_INGESTION_ASSISTANT_ID=ingestion_graph
 
