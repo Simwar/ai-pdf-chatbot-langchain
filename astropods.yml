@@ -23,8 +23,22 @@ integrations:
 
 knowledge:
   db:
-    provider: postgres
+    container:
+      image: pgvector/pgvector:pg17
+      port: 5432
+      volume: /var/lib/postgresql/data
     persistent: true
+    inputs:
+      - name: POSTGRES_DB
+        datatype: string
+        default: postgres
+      - name: POSTGRES_USER
+        datatype: string
+        default: postgres
+      - name: POSTGRES_PASSWORD
+        datatype: string
+        secret: true
+        default: postgres
 
 dev:
   interfaces:
