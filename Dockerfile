@@ -12,7 +12,7 @@ COPY frontend/ ./
 # The backend runs co-located on port 8123; bake that URL in at build time.
 # Server-side routes (API routes) read this from process.env at runtime so the
 # value injected by `ast configure` will override it for the LangGraph URL.
-ENV NEXT_PUBLIC_LANGGRAPH_API_URL=http://localhost:8123
+ENV NEXT_PUBLIC_LANGGRAPH_API_URL=http://localhost:2024
 ENV LANGGRAPH_RETRIEVAL_ASSISTANT_ID=retrieval_graph
 ENV LANGGRAPH_INGESTION_ASSISTANT_ID=ingestion_graph
 
@@ -46,7 +46,7 @@ COPY --from=backend-deps /app/backend/node_modules ./backend/node_modules
 COPY backend/ ./backend/
 
 # Backend LangGraph server (co-located, reachable at localhost:8123)
-ENV NEXT_PUBLIC_LANGGRAPH_API_URL=http://localhost:8123
+ENV NEXT_PUBLIC_LANGGRAPH_API_URL=http://localhost:2024
 ENV LANGGRAPH_RETRIEVAL_ASSISTANT_ID=retrieval_graph
 ENV LANGGRAPH_INGESTION_ASSISTANT_ID=ingestion_graph
 
