@@ -1,46 +1,61 @@
-# Build stage — treat the Next.js frontend as a standalone project.
-# The backend workspace is not needed in this container (it connects to an
-# external LangGraph API at runtime via NEXT_PUBLIC_LANGGRAPH_API_URL).
-FROM node:20-slim AS builder
+# ─── Frontend build ───────────────────────────────────────────────────────────
+# Treat the Next.js frontend as a standalone project to avoid triggering
+# native module compilation (chromadb → onnxruntime-node) from the backend workspace.
+FROM node:20-slim AS frontend-builder
 
-WORKDIR /app
+WORKDIR /app/frontend
 
 COPY frontend/package.json ./
 RUN npm install
-
 COPY frontend/ ./
 
-# langgraph-client.ts and langgraph-server.ts both call createClient() / createServerClient()
-# at module level, which throw immediately if these vars are missing — and Next.js evaluates
-# them at build time. Set placeholders here so the build succeeds; real values are injected
-# at runtime via `ast configure`.
-ENV NEXT_PUBLIC_LANGGRAPH_API_URL=http://placeholder
+# The backend runs co-located on port 8123; bake that URL in at build time.
+# Server-side routes (API routes) read this from process.env at runtime so the
+# value injected by `ast configure` will override it for the LangGraph URL.
+ENV NEXT_PUBLIC_LANGGRAPH_API_URL=http://localhost:8123
 ENV LANGGRAPH_RETRIEVAL_ASSISTANT_ID=retrieval_graph
 ENV LANGGRAPH_INGESTION_ASSISTANT_ID=ingestion_graph
 
 RUN npm run build
 
-# Runtime stage
+# ─── Backend dependencies ─────────────────────────────────────────────────────
+# Install with build tools so that any native modules (onnxruntime-node via chromadb)
+# can compile if no pre-built binary is available for this platform.
+FROM node:20-slim AS backend-deps
+
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app/backend
+
+COPY backend/package.json ./
+RUN npm install
+
+# ─── Runtime ─────────────────────────────────────────────────────────────────
 FROM node:20-slim
 
 WORKDIR /app
 
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/node_modules ./node_modules
+# Frontend
+COPY --from=frontend-builder /app/frontend/.next    ./frontend/.next
+COPY --from=frontend-builder /app/frontend/public   ./frontend/public
+COPY --from=frontend-builder /app/frontend/package.json ./frontend/
+COPY --from=frontend-builder /app/frontend/node_modules ./frontend/node_modules
 
-# Default env vars — langgraph-server.ts calls createServerClient() at module load time
-# and throws immediately if these are missing. Provide defaults so the server starts;
-# real values are injected by `ast configure` and override these at runtime.
-ENV NEXT_PUBLIC_LANGGRAPH_API_URL=http://placeholder
+# Backend: deps built above + TypeScript source (langgraph-cli reads .ts directly via tsx)
+COPY --from=backend-deps /app/backend/node_modules ./backend/node_modules
+COPY backend/ ./backend/
+
+# Backend LangGraph server (co-located, reachable at localhost:8123)
+ENV NEXT_PUBLIC_LANGGRAPH_API_URL=http://localhost:8123
 ENV LANGGRAPH_RETRIEVAL_ASSISTANT_ID=retrieval_graph
 ENV LANGGRAPH_INGESTION_ASSISTANT_ID=ingestion_graph
 
-# Port must match dev.interfaces.frontend.port in astropods.yml (3000).
-# ast dev forwards container:3000 → localhost:3000; the platform proxies 80 → 3000 in production.
+# Frontend
 ENV PORT=3000
 ENV NODE_ENV=production
-EXPOSE 3000
 
-CMD ["node_modules/.bin/next", "start"]
+COPY start.sh ./
+RUN chmod +x start.sh
+
+EXPOSE 3000
+CMD ["./start.sh"]
