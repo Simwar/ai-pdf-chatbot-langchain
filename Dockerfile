@@ -54,6 +54,10 @@ ENV LANGGRAPH_INGESTION_ASSISTANT_ID=ingestion_graph
 ENV PORT=3000
 ENV NODE_ENV=production
 
+# Pre-create the .env file langgraph-cli requires — empty is fine since
+# env vars are injected by the platform at runtime.
+RUN touch ./backend/.env
+
 COPY start.sh ./
 RUN chmod +x start.sh
 
