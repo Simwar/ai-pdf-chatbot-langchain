@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://astropods.ai/schema/package.json
+spec: package/v1
+name: ai-pdf-chatbot
+
+meta:
+  description: "AI PDF chatbot that ingests documents, stores embeddings in Supabase, and answers questions using LangChain"
+
+agent:
+  build:
+    context: .
+    dockerfile: Dockerfile
+
+models:
+  openai:
+    provider: openai
+
+integrations:
+  openai:
+    provider: openai
+  supabase:
+    provider: supabase
+
+interfaces:
+  frontend: true
+  messaging: true
+
+dev:
+  interfaces:
+    frontend:
+      port: 3000
+    messaging:
+      adapters: [web]
