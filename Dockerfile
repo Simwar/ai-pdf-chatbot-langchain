@@ -3,13 +3,16 @@ FROM node:20-slim AS builder
 
 WORKDIR /app
 
-# Install dependencies (yarn.lock drives resolution in this monorepo)
+# Install ONLY frontend deps.
+# Stub the backend workspace with an empty package.json so yarn doesn't attempt to
+# build its native modules (chromadb → onnxruntime-node) — they aren't needed here.
 COPY package.json yarn.lock turbo.json ./
 COPY frontend/package.json ./frontend/
-COPY backend/package.json ./backend/
+RUN mkdir -p backend && echo '{"name":"backend","version":"1.0.0","private":true}' > backend/package.json
 RUN npm install -g yarn && yarn install --frozen-lockfile
 
-# Build the Next.js frontend
+# Build the Next.js frontend (COPY . . restores the real backend/package.json, which is fine
+# since the packages are already installed and yarn workspace build doesn't re-install)
 COPY . .
 RUN yarn workspace frontend build
 
