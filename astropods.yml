@@ -31,11 +31,3 @@ dev:
     messaging:
       adapters: [web]
 
-ingestion:
-  sync:
-    container:
-      build:
-        context: .
-        dockerfile: ingestion/Dockerfile
-    trigger:
-      type: manual   # Change to: startup | schedule | webhook
