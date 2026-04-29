@@ -39,9 +39,10 @@ ENV LANGCHAIN_API_KEY=placeholder
 ENV LANGGRAPH_RETRIEVAL_ASSISTANT_ID=retrieval_graph
 ENV LANGGRAPH_INGESTION_ASSISTANT_ID=ingestion_graph
 
-# The Astro spec requires interfaces.frontend agents to serve on port 80
-ENV PORT=80
+# Port must match dev.interfaces.frontend.port in astropods.yml (3000).
+# ast dev forwards container:3000 → localhost:3000; the platform proxies 80 → 3000 in production.
+ENV PORT=3000
 ENV NODE_ENV=production
-EXPOSE 80
+EXPOSE 3000
 
 CMD ["node_modules/.bin/next", "start"]

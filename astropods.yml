@@ -22,12 +22,9 @@ integrations:
 
 interfaces:
   frontend: true
-  messaging: true
 
 dev:
   interfaces:
     frontend:
       port: 3000
-    messaging:
-      adapters: [web]
 
