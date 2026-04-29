@@ -59,9 +59,9 @@ export type PDFDocument = Document & {
 export interface BaseConfiguration {
   /**
    * The vector store provider to use for retrieval.
-   * @default 'supabase'
+   * @default 'postgres'
    */
-  retrieverProvider?: 'supabase';
+  retrieverProvider?: 'postgres';
 
   /**
    * Additional keyword arguments to pass to the search function of the retriever for filtering.

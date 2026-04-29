@@ -20,8 +20,11 @@ models:
 integrations:
   openai:
     provider: openai
-  supabase:
-    provider: supabase
+
+knowledge:
+  db:
+    provider: postgres
+    persistent: true
 
 dev:
   interfaces:
