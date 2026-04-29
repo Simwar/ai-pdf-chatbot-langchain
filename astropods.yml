@@ -1,9 +1,6 @@
 # yaml-language-server: $schema=https://astropods.ai/schema/package.json
-spec: package/v1
+spec: astro/v1
 name: ai-pdf-chatbot-langchain
-
-meta:
-  description: "AI PDF chatbot with LangChain & LangGraph for document Q&A"
 
 agent:
   build:
@@ -23,25 +20,9 @@ integrations:
 
 knowledge:
   db:
-    container:
-      image: pgvector/pgvector:pg17
-      port: 5432
-      volume: /var/lib/postgresql/data
-    persistent: true
-    inputs:
-      - name: POSTGRES_DB
-        datatype: string
-        default: postgres
-      - name: POSTGRES_USER
-        datatype: string
-        default: postgres
-      - name: POSTGRES_PASSWORD
-        datatype: string
-        secret: true
-        default: postgres
+    provider: postgres
 
 dev:
   interfaces:
     frontend:
       port: 3000
-
