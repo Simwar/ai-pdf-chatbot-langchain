@@ -14,10 +14,6 @@ models:
   openai:
     provider: openai
 
-integrations:
-  openai:
-    provider: openai
-
 knowledge:
   db:
     provider: postgres
