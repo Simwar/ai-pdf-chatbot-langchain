@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/langgraph-server';
 import { retrievalAssistantStreamConfig } from '@/constants/graphConfigs';
 
-export const runtime = 'edge';
+// Removed: export const runtime = 'edge'
+// @langchain/langgraph-sdk uses Node.js APIs unavailable in the V8 edge sandbox.
+// Next.js evaluates edge routes at build time, crashing the build. Node.js runtime
+// still supports streaming ReadableStream responses, so nothing is lost.
 
 export async function POST(req: Request) {
   try {
