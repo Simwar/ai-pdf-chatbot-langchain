@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package.json yarn.lock turbo.json ./
 COPY frontend/package.json ./frontend/
 COPY backend/package.json ./backend/
-RUN corepack enable && yarn install --frozen-lockfile
+RUN npm install -g yarn && yarn install --frozen-lockfile
 
 # Build the Next.js frontend
 COPY . .
