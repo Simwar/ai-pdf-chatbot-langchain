@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://astropods.ai/schema/package.json
+spec: astro/v1
+name: ai-pdf-chatbot-langchain
+
+agent:
+  build:
+    context: .
+    dockerfile: Dockerfile
+  interfaces:
+    frontend: true
+    messaging: false
+
+models:
+  openai:
+    provider: openai
+
+knowledge:
+  db:
+    provider: postgres
+    inputs:
+      - name: POSTGRES_PASSWORD
+        datatype: string
+        default: postgres
+
+dev:
+  interfaces:
+    frontend:
+      port: 3000

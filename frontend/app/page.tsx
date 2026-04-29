@@ -10,7 +10,6 @@ import { Paperclip, ArrowUp, Loader2 } from 'lucide-react';
 import { ExamplePrompts } from '@/components/example-prompts';
 import { ChatMessage } from '@/components/chat-message';
 import { FilePreview } from '@/components/file-preview';
-import { client } from '@/lib/langgraph-client';
 import {
   AgentState,
   documentType,
@@ -44,7 +43,9 @@ export default function Home() {
       if (threadId) return;
 
       try {
-        const thread = await client.createThread();
+        const res = await fetch('/api/threads', { method: 'POST' });
+        if (!res.ok) throw new Error('Failed to create thread');
+        const thread = await res.json();
 
         setThreadId(thread.thread_id);
       } catch (error) {
@@ -272,16 +273,6 @@ export default function Home() {
         <>
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <p className="font-medium text-muted-foreground max-w-md mx-auto">
-                This ai chatbot is an example template to accompany the book:{' '}
-                <a
-                  href="https://www.oreilly.com/library/view/learning-langchain/9781098167271/"
-                  className="underline hover:text-foreground"
-                >
-                  Learning LangChain (O'Reilly): Building AI and LLM
-                  applications with LangChain and LangGraph
-                </a>
-              </p>
             </div>
           </div>
           <ExamplePrompts onPromptSelect={setInput} />

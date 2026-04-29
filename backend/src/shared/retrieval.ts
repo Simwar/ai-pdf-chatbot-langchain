@@ -1,33 +1,40 @@
 import { VectorStoreRetriever } from '@langchain/core/vectorstores';
 import { OpenAIEmbeddings } from '@langchain/openai';
-import { SupabaseVectorStore } from '@langchain/community/vectorstores/supabase';
-import { createClient } from '@supabase/supabase-js';
+import { PGVectorStore } from '@langchain/community/vectorstores/pgvector';
+import { Pool } from 'pg';
 import { RunnableConfig } from '@langchain/core/runnables';
 import {
   BaseConfigurationAnnotation,
   ensureBaseConfiguration,
 } from './configuration.js';
 
-export async function makeSupabaseRetriever(
+export async function makePostgresRetriever(
   configuration: typeof BaseConfigurationAnnotation.State,
 ): Promise<VectorStoreRetriever> {
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error(
-      'SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables are not defined',
-    );
-  }
   const embeddings = new OpenAIEmbeddings({
     model: 'text-embedding-3-small',
   });
-  const supabaseClient = createClient(
-    process.env.SUPABASE_URL ?? '',
-    process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
-  );
-  const vectorStore = new SupabaseVectorStore(embeddings, {
-    client: supabaseClient,
-    tableName: 'documents',
-    queryName: 'match_documents',
+
+  const pool = new Pool({
+    host: process.env.POSTGRES_HOST ?? 'localhost',
+    port: parseInt(process.env.POSTGRES_PORT ?? '5432'),
+    database: process.env.POSTGRES_DB ?? 'postgres',
+    user: process.env.POSTGRES_USER ?? 'postgres',
+    password: process.env.POSTGRES_PASSWORD ?? 'postgres',
   });
+
+  // Creates the pgvector extension and documents table if they don't exist yet.
+  const vectorStore = await PGVectorStore.initialize(embeddings, {
+    pool,
+    tableName: 'documents',
+    columns: {
+      idColumnName: 'id',
+      vectorColumnName: 'embedding',
+      contentColumnName: 'content',
+      metadataColumnName: 'metadata',
+    },
+  });
+
   return vectorStore.asRetriever({
     k: configuration.k,
     filter: configuration.filterKwargs,
@@ -39,8 +46,8 @@ export async function makeRetriever(
 ): Promise<VectorStoreRetriever> {
   const configuration = ensureBaseConfiguration(config);
   switch (configuration.retrieverProvider) {
-    case 'supabase':
-      return makeSupabaseRetriever(configuration);
+    case 'postgres':
+      return makePostgresRetriever(configuration);
     default:
       throw new Error(
         `Unsupported retriever provider: ${configuration.retrieverProvider}`,
