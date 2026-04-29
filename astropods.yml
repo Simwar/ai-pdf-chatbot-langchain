@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://astropods.ai/schema/package.json
+spec: package/v1
+name: ai-pdf-chatbot-langchain
+
+meta:
+  description: "AI PDF chatbot with LangChain & LangGraph for document Q&A"
+
+agent:
+  build:
+    context: .
+    dockerfile: Dockerfile
+
+models:
+  openai:
+    provider: openai
+
+integrations:
+  openai:
+    provider: openai
+  supabase:
+    provider: supabase
+
+interfaces:
+  frontend: true
+  messaging: true
+
+dev:
+  interfaces:
+    frontend:
+      port: 3000
+    messaging:
+      adapters: [web]
+
+ingestion:
+  sync:
+    container:
+      build:
+        context: .
+        dockerfile: ingestion/Dockerfile
+    trigger:
+      type: manual   # Change to: startup | schedule | webhook
