@@ -51,3 +51,4 @@ llm_context/
 test_docs
 
 .swc
+docker-compose.override.yml
