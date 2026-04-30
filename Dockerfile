@@ -51,15 +51,15 @@ ENV LANGGRAPH_RETRIEVAL_ASSISTANT_ID=retrieval_graph
 ENV LANGGRAPH_INGESTION_ASSISTANT_ID=ingestion_graph
 
 # Frontend
-ENV PORT=3000
+ENV PORT=80
 ENV NODE_ENV=production
 
-# Pre-create the .env file langgraph-cli requires — empty is fine since
-# env vars are injected by the platform at runtime.
-RUN touch ./backend/.env
+# Pre-create files/dirs the langgraph-cli writes at startup.
+# The container filesystem is read-only in production so these must exist before run.
+RUN touch ./backend/.env && mkdir -p ./backend/.langgraph_api
 
 COPY start.sh ./
 RUN chmod +x start.sh
 
-EXPOSE 3000
+EXPOSE 80
 CMD ["./start.sh"]
