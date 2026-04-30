@@ -56,7 +56,9 @@ ENV NODE_ENV=production
 
 # Pre-create files/dirs the langgraph-cli writes at startup.
 # The container filesystem is read-only in production so these must exist before run.
-RUN touch ./backend/.env && mkdir -p ./backend/.langgraph_api
+RUN touch ./backend/.env && \
+    mkdir -p ./backend/.langgraph_api && \
+    chmod 777 ./backend/.langgraph_api
 
 COPY start.sh ./
 RUN chmod +x start.sh

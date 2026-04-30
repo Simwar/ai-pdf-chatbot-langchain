@@ -15,13 +15,15 @@ export async function makePostgresRetriever(
     model: 'text-embedding-3-small',
   });
 
-  const pool = new Pool({
-    host: process.env.POSTGRES_HOST ?? 'localhost',
-    port: parseInt(process.env.POSTGRES_PORT ?? '5432'),
-    database: process.env.POSTGRES_DB ?? 'postgres',
-    user: process.env.POSTGRES_USER ?? 'postgres',
-    password: process.env.POSTGRES_PASSWORD ?? 'postgres',
-  });
+  const pool = process.env.POSTGRES_URL
+    ? new Pool({ connectionString: process.env.POSTGRES_URL })
+    : new Pool({
+        host: process.env.POSTGRES_HOST ?? 'localhost',
+        port: parseInt(process.env.POSTGRES_PORT ?? '5432'),
+        database: process.env.POSTGRES_DB ?? 'postgres',
+        user: process.env.POSTGRES_USER ?? 'postgres',
+        password: process.env.POSTGRES_PASSWORD ?? 'postgres',
+      });
 
   // Creates the pgvector extension and documents table if they don't exist yet.
   const vectorStore = await PGVectorStore.initialize(embeddings, {
