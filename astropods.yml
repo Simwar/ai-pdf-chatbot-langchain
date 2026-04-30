@@ -25,4 +25,4 @@ knowledge:
 dev:
   interfaces:
     frontend:
-      port: 3000
+      port: 80
