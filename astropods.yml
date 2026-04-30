@@ -17,10 +17,7 @@ models:
 knowledge:
   db:
     provider: postgres
-    inputs:
-      - name: POSTGRES_PASSWORD
-        datatype: string
-        default: postgres
+    persistent: true
 
 dev:
   interfaces:
