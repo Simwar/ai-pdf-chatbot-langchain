@@ -15,15 +15,15 @@ export async function makePostgresRetriever(
     model: 'text-embedding-3-small',
   });
 
-  // POSTGRES_HOST/PORT are injected by the platform's knowledge provider.
-  // Credentials are hardcoded to the postgres superuser defaults — the platform
-  // does not propagate knowledge input values to the agent container (see memory-box pattern).
+  // Platform injects POSTGRES_HOST/PORT (provider connection) and
+  // POSTGRES_USER/PASSWORD/DB (generated credentials) into the agent via secretKeyRef.
+  // Never hardcode user/password — the platform generates a random password per deployment.
   const pool = new Pool({
     host: process.env.POSTGRES_HOST ?? 'localhost',
     port: parseInt(process.env.POSTGRES_PORT ?? '5432'),
-    database: 'postgres',
-    user: 'postgres',
-    password: 'postgres',
+    database: process.env.POSTGRES_DB ?? 'postgres',
+    user: process.env.POSTGRES_USER ?? 'postgres',
+    password: process.env.POSTGRES_PASSWORD ?? 'postgres',
   });
 
   // Creates the pgvector extension and documents table if they don't exist yet.
