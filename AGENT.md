@@ -1,17 +1,20 @@
 ---
-description: "Upload PDFs and chat with them using LangChain and LangGraph. Documents are embedded and stored in pgvector for semantic retrieval."
+description: "Fork of mayooear/ai-pdf-chatbot-langchain — upload PDFs and chat with them using LangChain and LangGraph, with documents embedded and stored in pgvector."
 tags: [rag, pdf, langchain, langgraph, document-qa, pgvector]
+authors:
+  - name: Simon Guerrier
+    account: simwar
 capabilities:
   - Ingest PDF documents and store them as vector embeddings
   - Answer questions about uploaded documents using semantic search
   - Maintain conversation history across multiple turns
-repository: https://github.com/mayooear/ai-pdf-chatbot-langchain
+repository: github:Simwar/ai-pdf-chatbot-langchain
 integrations: [openai, postgres]
 ---
 
 # AI PDF Chatbot
 
-Upload one or more PDF documents and ask questions about their content. The agent retrieves the most relevant passages using vector search and generates grounded answers via GPT-4o.
+Upload one or more PDF documents and ask questions about their content. The agent retrieves the most relevant passages using vector search and generates grounded answers via GPT-4o. This is a fork of the original [ai-pdf-chatbot-langchain](https://github.com/mayooear/ai-pdf-chatbot-langchain) by mayooear.
 
 ## How it works
 
